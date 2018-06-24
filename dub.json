@@ -1,0 +1,9 @@
+{
+    "name": "DScript",
+    "authors": [
+        "conorob"
+	],
+    "description": "A minimal D application.",
+    "copyright": "Copyright © 2018, conorob",
+    "license": "proprietary"
+}
