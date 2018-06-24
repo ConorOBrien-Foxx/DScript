@@ -12,3 +12,6 @@ dscript-test-*
 *.o
 *.obj
 *.lst
+
+test*
+*.out.d
