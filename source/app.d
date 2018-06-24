@@ -15,9 +15,12 @@ string baseWithoutExtension(string s) {
 const importSuggestions = regex(`import (\S+?);`);
 const undefinedIndentifiers =  regex(r"(?:undefined identifier `|no property ['`]|template [`'])(\w+)([`'] is not defined)?");
 const brokenExpectations = regex(r"found `(.+?)` when expecting `(.+?)`");
+const nonAlphaNumeric = regex(`[^A-Za-z0-9]`);
 bool tryCompile(string base, string outFileName, string content, string[] libs) {
     auto outFile = File(outFileName, "w");
-    outFile.write("module " ~ base ~ ";\n");
+    string safeBase = base.replaceAll(nonAlphaNumeric, "_");
+
+    outFile.write("module " ~ safeBase ~ ";\n");
     foreach(lib; libs) {
         outFile.write("import " ~ lib ~ ";\n");
     }
