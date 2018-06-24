@@ -1,5 +1,6 @@
 {
-    "name": "DScript",
+    "name": "dscript",
+    "targetName": "DScript",
     "authors": [
         "conorob"
 	],
