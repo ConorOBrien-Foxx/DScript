@@ -4,6 +4,7 @@ import std.path;
 import std.process;
 import std.array;
 import std.regex;
+import std.algorithm;
 
 import info;
 
@@ -11,19 +12,9 @@ string baseWithoutExtension(string s) {
     return s.stripExtension.baseName;
 }
 
-const AUTO_IMPORTS = [
-    "algorithm", "array", "ascii", "base64", "bigint", "bitmanip",
-    "compiler", "complex", "concurrency", "container", "conv", "csv",
-    "datetime", "demangle", "digest", "encoding", "exception", "experimental",
-    "file", "format", "functional", "getopt", "json", "math", "mathspecial",
-    "meta", "mmfile", "net", "numeric", "outbuffer", "parallelism", "path",
-    "process", "random", "range", "regex", "signals", "socket", "stdint",
-    "stdio", "string", "system", "traits", "typecons", "uni", "uri", "utf",
-    "uuid", "variant", "windows", "xml", "zip", "zlib"
-];
-
 const importSuggestions = regex(`import (\S+?);`);
-const undefinedIndentifiers =  regex(r"(?:undefined identifier `|no property ')(\w+)");
+const undefinedIndentifiers =  regex(r"(?:undefined identifier `|no property '|template ')(\w+)(' is not defined)?");
+const brokenExpectations = regex(r"found `(.+?)` when expecting `(.+?)`");
 bool tryCompile(string base, string outFileName, string content, string[] libs) {
     auto outFile = File(outFileName, "w");
     outFile.write("module " ~ base ~ ";\n");
@@ -32,10 +23,10 @@ bool tryCompile(string base, string outFileName, string content, string[] libs) 
     }
     outFile.write("void main(string[] argv) {\n");
     outFile.write(content);
-    outFile.write("\n}");
+    outFile.write("\n;}");
     outFile.close;
 
-    auto dmd = execute(["dmd", outFileName]);
+    auto dmd = execute(["dmd", outFileName, "-wi"]);
     if(dmd.status != 0) {
         bool changed = false;
         // auto import
@@ -59,7 +50,7 @@ bool tryCompile(string base, string outFileName, string content, string[] libs) 
         }
 
         if(changed) {
-            writeln("ASDADASDSA:", dmd.output);
+            /* writeln("ASDADASDSA:", dmd.output); */
             return tryCompile(base, outFileName, content, libs);
         }
         else {
