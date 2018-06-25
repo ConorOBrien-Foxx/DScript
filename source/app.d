@@ -73,7 +73,12 @@ void main(string[] argv) {
 
     if(tryCompile(base, outFileName ~ ".d", content, [])) {
         stderr.writeln("Executable successfully generated.");
-        spawnProcess("./" ~ outFileName ~ ".exe");
+        version(Windows) {
+            spawnProcess("./" ~ outFileName ~ ".exe");
+        }
+        version(linux) {
+            spawnProcess("./" ~ outFileName);
+        }
     }
     else {
         stderr.writeln("Unable to generate executable.");
